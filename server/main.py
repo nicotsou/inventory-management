@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime, timedelta
-from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
+from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders, tasks
 
 app = FastAPI(title="Factory Inventory Management System")
 
@@ -129,6 +129,18 @@ class CreatePurchaseOrderRequest(BaseModel):
     lead_time_days: int
     notes: Optional[str] = None
 
+class Task(BaseModel):
+    id: int
+    title: str
+    priority: str
+    dueDate: str
+    status: str
+
+class CreateTaskRequest(BaseModel):
+    title: str
+    priority: str
+    dueDate: str
+
 # API endpoints
 @app.get("/")
 def root():
@@ -215,6 +227,44 @@ def create_purchase_order(request: CreatePurchaseOrderRequest):
     }
     purchase_orders.append(new_po)
     return new_po
+
+@app.get("/api/tasks", response_model=List[Task])
+def get_tasks():
+    """Get all tasks"""
+    return tasks
+
+@app.post("/api/tasks", response_model=Task)
+def create_task(request: CreateTaskRequest):
+    """Create a new task"""
+    # Start above 1000 so generated ids never collide with the client's mock task ids (1-4)
+    new_id = max((task["id"] for task in tasks), default=1000) + 1
+    new_task = {
+        "id": new_id,
+        "title": request.title,
+        "priority": request.priority,
+        "dueDate": request.dueDate,
+        "status": "pending"
+    }
+    tasks.append(new_task)
+    return new_task
+
+@app.delete("/api/tasks/{task_id}")
+def delete_task(task_id: int):
+    """Delete a task"""
+    task = next((task for task in tasks if task["id"] == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    tasks.remove(task)
+    return {"message": "Task deleted"}
+
+@app.patch("/api/tasks/{task_id}", response_model=Task)
+def toggle_task(task_id: int):
+    """Toggle a task's completion status"""
+    task = next((task for task in tasks if task["id"] == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task["status"] = "completed" if task["status"] == "pending" else "pending"
+    return task
 
 @app.get("/api/dashboard/summary")
 def get_dashboard_summary(
