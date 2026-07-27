@@ -74,6 +74,45 @@
           </table>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">{{ t('orders.submittedOrders') }} ({{ purchaseOrders.length }})</h3>
+        </div>
+        <div v-if="purchaseOrders.length === 0" class="loading">{{ t('orders.noSubmittedOrders') }}</div>
+        <div v-else class="table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>{{ t('orders.table.sku') }}</th>
+                <th>{{ t('demand.table.itemName') }}</th>
+                <th>{{ t('orders.table.quantity') }}</th>
+                <th>{{ t('orders.table.warehouse') }}</th>
+                <th>{{ t('orders.table.status') }}</th>
+                <th>{{ t('orders.table.orderDate') }}</th>
+                <th>{{ t('restocking.table.leadTime') }}</th>
+                <th>{{ t('orders.table.expectedDelivery') }}</th>
+                <th>{{ t('orders.table.totalValue') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="po in purchaseOrders" :key="po.id">
+                <td><strong>{{ po.item_sku }}</strong></td>
+                <td>{{ po.item_name }}</td>
+                <td>{{ po.quantity }}</td>
+                <td>{{ po.warehouse }}</td>
+                <td>
+                  <span class="badge info">{{ po.status }}</span>
+                </td>
+                <td>{{ formatDate(po.created_date) }}</td>
+                <td>{{ t('restocking.leadTimeDays', { count: po.lead_time_days }) }}</td>
+                <td>{{ formatDate(po.expected_delivery_date) }}</td>
+                <td><strong>{{ currencySymbol }}{{ po.total_cost.toLocaleString() }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -95,6 +134,7 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const orders = ref([])
+    const purchaseOrders = ref([])
 
     // Use shared filters
     const {
@@ -129,6 +169,14 @@ export default {
       loadOrders()
     })
 
+    const loadPurchaseOrders = async () => {
+      try {
+        purchaseOrders.value = await api.getPurchaseOrders()
+      } catch (err) {
+        console.error('Failed to load purchase orders:', err)
+      }
+    }
+
     const getOrdersByStatus = (status) => {
       return orders.value.filter(order => order.status === status)
     }
@@ -153,13 +201,17 @@ export default {
       })
     }
 
-    onMounted(loadOrders)
+    onMounted(() => {
+      loadOrders()
+      loadPurchaseOrders()
+    })
 
     return {
       t,
       loading,
       error,
       orders,
+      purchaseOrders,
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
