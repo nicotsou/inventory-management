@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx prettier --write \"$CLAUDE_FILE_PATH\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "epcc-workflow@aws-claude-code-plugins": true
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}

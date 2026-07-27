@@ -7,7 +7,7 @@
     "forecasted_demand": 450,
     "trend": "increasing",
     "period": "Next 30 days",
-    "unit_cost": 42.50,
+    "unit_cost": 42.5,
     "lead_time_days": 14,
     "warehouse": "San Francisco",
     "category": "Actuators"
@@ -46,7 +46,7 @@
     "forecasted_demand": 35,
     "trend": "decreasing",
     "period": "Next 30 days",
-    "unit_cost": 385.00,
+    "unit_cost": 385.0,
     "lead_time_days": 21,
     "warehouse": "London",
     "category": "Actuators"
@@ -72,7 +72,7 @@
     "forecasted_demand": 121,
     "trend": "stable",
     "period": "Next 30 days",
-    "unit_cost": 65.00,
+    "unit_cost": 65.0,
     "lead_time_days": 10,
     "warehouse": "San Francisco",
     "category": "Controllers"
@@ -85,7 +85,7 @@
     "forecasted_demand": 252,
     "trend": "stable",
     "period": "Next 30 days",
-    "unit_cost": 28.50,
+    "unit_cost": 28.5,
     "lead_time_days": 12,
     "warehouse": "Tokyo",
     "category": "Power Supplies"
@@ -98,7 +98,7 @@
     "forecasted_demand": 182,
     "trend": "stable",
     "period": "Next 30 days",
-    "unit_cost": 89.50,
+    "unit_cost": 89.5,
     "lead_time_days": 9,
     "warehouse": "London",
     "category": "Sensors"
@@ -111,7 +111,7 @@
     "forecasted_demand": 96,
     "trend": "stable",
     "period": "Next 30 days",
-    "unit_cost": 22.00,
+    "unit_cost": 22.0,
     "lead_time_days": 15,
     "warehouse": "Tokyo",
     "category": "Controllers"
