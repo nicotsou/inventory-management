@@ -6,6 +6,7 @@ export default {
     orders: '注文',
     finance: '財務',
     demandForecast: '需要予測',
+    restocking: '再発注',
     companyName: '触媒コンポーネンツ',
     subtitle: '在庫管理システム'
   },
@@ -112,6 +113,8 @@ export default {
     onTimeDelivery: '定時配達',
     itemsCount: '{count}件',
     quantity: '数量',
+    submittedOrders: '送信済み注文',
+    noSubmittedOrders: 'まだ再発注は送信されていません。',
     table: {
       orderNumber: '注文番号',
       orderId: '注文ID',
@@ -121,6 +124,8 @@ export default {
       category: 'カテゴリ',
       warehouse: '倉庫',
       items: '品目',
+      sku: 'SKU',
+      quantity: '数量',
       value: '価格',
       totalValue: '合計金額',
       status: 'ステータス',
@@ -186,6 +191,34 @@ export default {
       trend: 'トレンド',
       period: '期間'
     }
+  },
+
+  // Restocking
+  restocking: {
+    title: '再発注',
+    description: '予算を設定し、需要予測に基づいた再発注の推奨品目を確認する',
+    budgetLabel: '利用可能な予算',
+    budgetHelp: 'スライダーを調整して予算に合う再発注の推奨品目を確認してください',
+    recommendedItems: '推奨品目',
+    noRecommendations: '現在の予算に収まる品目がありません。予算を増やしてください。',
+    table: {
+      sku: 'SKU',
+      itemName: '品目名',
+      category: 'カテゴリー',
+      warehouse: '倉庫',
+      shortfall: '不足数量',
+      unitCost: '単価',
+      lineTotal: '小計',
+      leadTime: '納期'
+    },
+    leadTimeDays: '{count}日',
+    totalSpend: '合計支出',
+    remainingBudget: '残り予算',
+    itemsSelected: '{count}件選択中',
+    placeOrder: '注文する',
+    placingOrder: '注文処理中...',
+    orderSuccess: '再発注が正常に送信されました！',
+    orderError: '注文の送信に失敗しました: {error}'
   },
 
   // Filters

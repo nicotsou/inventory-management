@@ -6,6 +6,7 @@ export default {
     orders: 'Orders',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
+    restocking: 'Restocking',
     companyName: 'Catalyst Components',
     subtitle: 'Inventory Management System'
   },
@@ -112,6 +113,8 @@ export default {
     onTimeDelivery: 'On-Time Delivery',
     itemsCount: '{count} items',
     quantity: 'Qty',
+    submittedOrders: 'Submitted Orders',
+    noSubmittedOrders: 'No restocking orders submitted yet.',
     table: {
       orderNumber: 'Order Number',
       orderId: 'Order ID',
@@ -121,6 +124,8 @@ export default {
       category: 'Category',
       warehouse: 'Warehouse',
       items: 'Items',
+      sku: 'SKU',
+      quantity: 'Quantity',
       value: 'Value',
       totalValue: 'Total Value',
       status: 'Status',
@@ -186,6 +191,34 @@ export default {
       trend: 'Trend',
       period: 'Period'
     }
+  },
+
+  // Restocking
+  restocking: {
+    title: 'Restocking',
+    description: 'Set a budget and get recommended items to restock based on demand forecasts',
+    budgetLabel: 'Available Budget',
+    budgetHelp: 'Adjust the slider to see restocking recommendations that fit your budget',
+    recommendedItems: 'Recommended Items',
+    noRecommendations: 'No items fit within the current budget. Increase the budget to see recommendations.',
+    table: {
+      sku: 'SKU',
+      itemName: 'Item Name',
+      category: 'Category',
+      warehouse: 'Warehouse',
+      shortfall: 'Shortfall Qty',
+      unitCost: 'Unit Cost',
+      lineTotal: 'Line Total',
+      leadTime: 'Lead Time'
+    },
+    leadTimeDays: '{count} days',
+    totalSpend: 'Total Spend',
+    remainingBudget: 'Remaining Budget',
+    itemsSelected: '{count} items selected',
+    placeOrder: 'Place Order',
+    placingOrder: 'Placing Order...',
+    orderSuccess: 'Restocking order placed successfully!',
+    orderError: 'Failed to place order: {error}'
   },
 
   // Filters

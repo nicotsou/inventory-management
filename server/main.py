@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
-from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
+from datetime import datetime, timedelta
+from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders, tasks
 
 app = FastAPI(title="Factory Inventory Management System")
 
@@ -89,6 +90,10 @@ class DemandForecast(BaseModel):
     forecasted_demand: int
     trend: str
     period: str
+    unit_cost: float
+    lead_time_days: int
+    warehouse: str
+    category: str
 
 class BacklogItem(BaseModel):
     id: str
@@ -103,22 +108,38 @@ class BacklogItem(BaseModel):
 
 class PurchaseOrder(BaseModel):
     id: str
-    backlog_item_id: str
-    supplier_name: str
+    item_sku: str
+    item_name: str
     quantity: int
     unit_cost: float
+    total_cost: float
+    warehouse: str
+    lead_time_days: int
     expected_delivery_date: str
     status: str
     created_date: str
     notes: Optional[str] = None
 
 class CreatePurchaseOrderRequest(BaseModel):
-    backlog_item_id: str
-    supplier_name: str
+    item_sku: str
+    item_name: str
     quantity: int
     unit_cost: float
-    expected_delivery_date: str
+    warehouse: str
+    lead_time_days: int
     notes: Optional[str] = None
+
+class Task(BaseModel):
+    id: int
+    title: str
+    priority: str
+    dueDate: str
+    status: str
+
+class CreateTaskRequest(BaseModel):
+    title: str
+    priority: str
+    dueDate: str
 
 # API endpoints
 @app.get("/")
@@ -174,10 +195,76 @@ def get_backlog():
     for item in backlog_items:
         item_dict = dict(item)
         # Check if this backlog item has a purchase order
-        has_po = any(po["backlog_item_id"] == item["id"] for po in purchase_orders)
+        has_po = any(po["item_sku"] == item["item_sku"] for po in purchase_orders)
         item_dict["has_purchase_order"] = has_po
         result.append(item_dict)
     return result
+
+@app.get("/api/purchase-orders", response_model=List[PurchaseOrder])
+def get_purchase_orders():
+    """Get all submitted purchase (restocking) orders"""
+    return purchase_orders
+
+@app.post("/api/purchase-orders", response_model=PurchaseOrder)
+def create_purchase_order(request: CreatePurchaseOrderRequest):
+    """Create a new purchase order (restocking submission)"""
+    created_date = datetime.now()
+    expected_delivery = created_date + timedelta(days=request.lead_time_days)
+
+    new_po = {
+        "id": str(len(purchase_orders) + 1),
+        "item_sku": request.item_sku,
+        "item_name": request.item_name,
+        "quantity": request.quantity,
+        "unit_cost": request.unit_cost,
+        "total_cost": round(request.quantity * request.unit_cost, 2),
+        "warehouse": request.warehouse,
+        "lead_time_days": request.lead_time_days,
+        "expected_delivery_date": expected_delivery.isoformat(),
+        "status": "Submitted",
+        "created_date": created_date.isoformat(),
+        "notes": request.notes
+    }
+    purchase_orders.append(new_po)
+    return new_po
+
+@app.get("/api/tasks", response_model=List[Task])
+def get_tasks():
+    """Get all tasks"""
+    return tasks
+
+@app.post("/api/tasks", response_model=Task)
+def create_task(request: CreateTaskRequest):
+    """Create a new task"""
+    # Start above 1000 so generated ids never collide with the client's mock task ids (1-4)
+    new_id = max((task["id"] for task in tasks), default=1000) + 1
+    new_task = {
+        "id": new_id,
+        "title": request.title,
+        "priority": request.priority,
+        "dueDate": request.dueDate,
+        "status": "pending"
+    }
+    tasks.append(new_task)
+    return new_task
+
+@app.delete("/api/tasks/{task_id}")
+def delete_task(task_id: int):
+    """Delete a task"""
+    task = next((task for task in tasks if task["id"] == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    tasks.remove(task)
+    return {"message": "Task deleted"}
+
+@app.patch("/api/tasks/{task_id}", response_model=Task)
+def toggle_task(task_id: int):
+    """Toggle a task's completion status"""
+    task = next((task for task in tasks if task["id"] == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task["status"] = "completed" if task["status"] == "pending" else "pending"
+    return task
 
 @app.get("/api/dashboard/summary")
 def get_dashboard_summary(
