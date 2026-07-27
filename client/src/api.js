@@ -122,4 +122,18 @@ export const api = {
     const response = await axios.get(`${API_BASE_URL}/purchase-orders`);
     return response.data;
   },
+
+  async getReorderSuggestions(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.warehouse && filters.warehouse !== "all") {
+      params.append("warehouse", filters.warehouse);
+    }
+    if (filters.category && filters.category !== "all")
+      params.append("category", filters.category);
+
+    const response = await axios.get(
+      `${API_BASE_URL}/reorder-suggestions?${params.toString()}`,
+    );
+    return response.data;
+  },
 };
